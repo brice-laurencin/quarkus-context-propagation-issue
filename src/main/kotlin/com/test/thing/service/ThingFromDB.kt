@@ -21,6 +21,9 @@ data class ThingFromDB(
 
     @Column(name = "reason")
     var reason: String? = null,
+
+    @Column(name = "elements_counts")
+    var elementsCounts: Int? = null,
 ): PanacheEntityBase
 
 enum class ThingStatus {
@@ -32,10 +35,12 @@ data class ThingModel(
     var name: String? = null,
     var status: ThingStatus? = null,
     var reason: String? = null,
+    var elementsCounts: Int? = null,
 ) {
     constructor(fromDb: ThingFromDB) : this() {
         id = fromDb.id
         status = fromDb.status
         reason = fromDb.reason
+        elementsCounts =  fromDb.elementsCounts
     }
 }

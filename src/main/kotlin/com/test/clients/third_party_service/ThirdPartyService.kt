@@ -2,6 +2,7 @@ package com.test.clients.third_party_service
 
 import com.test.clients.auth0.Auth0TokenService
 import com.test.thing.service.ThingModel
+import io.micrometer.core.annotation.Counted
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
 import jakarta.enterprise.inject.Default
@@ -39,22 +40,6 @@ class ThirdPartyService {
 
         try {
             val tpResponse = tpRestClient.getEntity("BEARER $token", thingModel.id!!)
-            logger.info("Got entity [${thingModel.id}] from TP Service.")
-
-            return tpResponse
-        } catch (e: Exception) {
-            throw Exception(
-                    "Unable to get entity with ID ${thingModel.id}",
-                    e,
-            )
-        }
-    }
-    suspend fun getThingNameCoroutine(thingModel: ThingModel): ServiceResponse? {
-
-        val token = auth0TokenService.getAPIToken(auth0ClientId, auth0ClientSecret)
-
-        try {
-            val tpResponse = tpRestClient.getEntityCoroutine("BEARER $token", thingModel.id!!)
             logger.info("Got entity [${thingModel.id}] from TP Service.")
 
             return tpResponse

@@ -25,28 +25,4 @@ class GreetingResource {
     @Consumes(MediaType.APPLICATION_JSON)
     fun getSome() = thingService.getFromThirdParty(ThingStatus.OK)
 
-    @GET
-    @Path("/parallel")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun getSomeParallel() = thingService.getFromThirdPartyParallel(ThingStatus.OK)
-
-    @GET
-    @Path("/managed")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun getSomeParallelManaged() = thingService.getFromThirdPartyManaged(ThingStatus.OK)
-
-    @GET
-    @Path("/coroutine")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    suspend fun getSomeContext() = thingService.getFromThirdPartyCoroutine(ThingStatus.OK)
-
-    @GET
-    @Path("/noDb")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    suspend fun getSomeNoDb() = thingService.getFromThirdPartyNoDb(ThingStatus.OK)
-
 }

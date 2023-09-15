@@ -31,48 +31,4 @@ class ThingService {
             thingModel
         }
     }
-
-    fun getFromThirdPartyParallel(status: ThingStatus): List<ThingModel> {
-        return thingRepository.findByStatus(status).parallelStream().map {
-            val thingModel = ThingModel(it)
-            thingModel.name = thirdPartyService.getThingName(thingModel)!!.nickname
-            thingModel
-        }.toList()
-    }
-
-    fun getFromThirdPartyNoDb(status: ThingStatus): List<ThingModel> {
-        val fakeList = ArrayList<ThingModel>()
-        repeat(500) {
-            fakeList.add(ThingModel(
-                    Random.nextLong(),
-                    status = ThingStatus.OK
-            ))
-        }
-        return fakeList.parallelStream().map {
-            it.name = thirdPartyService.getThingName(it)!!.nickname
-            it
-        }.toList()
-    }
-
-    fun getFromThirdPartyManaged(status: ThingStatus): List<ThingModel> {
-        return thingRepository.findByStatus(status).parallelStream().map {
-            managedExecutor.supplyAsync {
-                val thingModel = ThingModel(it)
-                thingModel.name = thirdPartyService.getThingName(thingModel)!!.nickname
-                thingModel
-            }
-        }.map { it.get() }.toList()
-    }
-
-    suspend fun getFromThirdPartyCoroutine(status: ThingStatus): List<ThingModel> {
-        return thingRepository.findByStatus(status).parallelStream().map {
-                coroutineScope {
-                    val thingModel = ThingModel(it)
-                    thingModel.name = thirdPartyService.getThingNameCoroutine(thingModel)!!.nickname
-                    thingModel
-                }
-
-            }.toList()
-
-    }
 }
