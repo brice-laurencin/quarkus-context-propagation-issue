@@ -1,7 +1,11 @@
+import org.gradle.api.JavaVersion.VERSION_21
+
 plugins {
-    kotlin("jvm") version "1.8.22"
-    kotlin("plugin.allopen") version "1.8.22"
+    kotlin("jvm") version "1.9.23"
+    kotlin("plugin.allopen") version "1.9.23"
     id("io.quarkus")
+    `java-test-fixtures`
+    `maven-publish`
 }
 
 repositories {
@@ -13,6 +17,33 @@ val quarkusPlatformGroupId: String by project
 val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 val testContainersVersion = "1.18.3"
+
+
+group = "com.nope"
+version = "0.0.1"
+
+java {
+    sourceCompatibility = VERSION_21
+    targetCompatibility = VERSION_21
+    withSourcesJar()
+}
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/brice-laurencin/quarkus-context-propagation-issue")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+tasks.withType<GenerateModuleMetadata> {
+    // The value 'enforced-platform' is provided in the validation
+    // error message you got
+    suppressedValidationErrors.add("enforced-platform")
+}
 
 dependencies {
 
