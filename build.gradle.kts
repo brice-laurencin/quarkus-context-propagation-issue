@@ -38,6 +38,11 @@ publishing {
             }
         }
     }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
 }
 tasks.withType<GenerateModuleMetadata> {
     // The value 'enforced-platform' is provided in the validation
