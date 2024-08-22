@@ -50,3 +50,15 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_21.toString()
     kotlinOptions.javaParameters = true
 }
+
+val oas by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+}
+
+val oasFile = project.file("build/generated/resources/openapi.json")
+
+val oasArtifact =
+    artifacts.add("oas", oasFile) {
+        builtBy(tasks["quarkusAppPartsBuild"])
+    }

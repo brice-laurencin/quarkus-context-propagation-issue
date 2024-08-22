@@ -11,3 +11,8 @@ pluginManagement {
     }
 }
 rootProject.name="tuto"
+
+include(
+    ":client",
+)
+project(":client").projectDir = File("client")
