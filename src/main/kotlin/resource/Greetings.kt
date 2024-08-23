@@ -16,37 +16,33 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
 class Greetings {
 
     @GET
-    fun get() = listOf(Data())
+    @APIResponses(
+        value = [APIResponse(
+            responseCode = "200",
+            content = [Content(
+                schema = Schema(
+        anyOf = [SomeThing::class, OtherThing::class]
+    )
+            )]
+        )]
+    )
+    fun get() = listOf(SomeThing(), OtherThing())
 }
 
-
-@Schema(description = "The data")
-data class Data(
-    @field:Schema(
-        type = SchemaType.ARRAY,
-        anyOf = [SomeThing::class, OtherThing::class],
-        discriminatorProperty = "@type",
-        discriminatorMapping = [
-            DiscriminatorMapping(
-                value = "SomeThing",
-                schema = SomeThing::class
-            ),
-            DiscriminatorMapping(
-                value = "OtherThing",
-                schema = OtherThing::class
-            ),
-        ]
-    )
-    val things: List<Thing> = listOf(SomeThing(), OtherThing())
+@Schema(
+    description = "Thing",
+    discriminatorProperty = "@type",
+    discriminatorMapping = [
+        DiscriminatorMapping(
+            value = "SomeThing",
+            schema = SomeThing::class
+        ),
+        DiscriminatorMapping(
+            value = "OtherThing",
+            schema = OtherThing::class
+        ),
+    ]
 )
-
-@Schema(description = "Some thing")
-data class SomeThing(val some: String = "some", override val thing: String = "thing") : Thing
-
-@Schema(description = "Other thing")
-data class OtherThing(val other: String = "other", override val thing: String = "thing") : Thing
-
-@Schema(description = "Thing")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes(
     value = [
@@ -57,3 +53,13 @@ data class OtherThing(val other: String = "other", override val thing: String = 
 interface Thing {
     val thing: String
 }
+
+@Schema(description = "Some thing", allOf = [Thing::class, SomeThing::class])
+data class SomeThing(val some: String = "some",
+                     @field:Schema(hidden = true)
+                     override val thing: String = "thing") : Thing
+
+@Schema(description = "Other thing", allOf = [Thing::class, OtherThing::class])
+data class OtherThing(val other: String = "other",
+                     @field:Schema(hidden = true)
+                     override val thing: String = "thing") : Thing
