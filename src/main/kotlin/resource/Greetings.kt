@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.MediaType
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType
 import org.eclipse.microprofile.openapi.annotations.media.Content
 import org.eclipse.microprofile.openapi.annotations.media.DiscriminatorMapping
@@ -13,21 +15,18 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses
 
 @Path("/")
+@Produces(MediaType.APPLICATION_JSON)
 class Greetings {
 
     @GET
-    @APIResponses(
-        value = [APIResponse(
-            responseCode = "200",
-            content = [Content(
-                schema = Schema(
-        anyOf = [SomeThing::class, OtherThing::class]
-    )
-            )]
-        )]
-    )
-    fun get() = listOf(SomeThing(), OtherThing())
+    fun get() = Data()
 }
+
+data class Data(
+    @field:Schema(
+                    anyOf = [SomeThing::class, OtherThing::class],
+                    type = SchemaType.ARRAY)
+    val things: List<Thing> = listOf(SomeThing(), OtherThing()))
 
 @Schema(
     description = "Thing",
@@ -50,16 +49,18 @@ class Greetings {
         JsonSubTypes.Type(value = OtherThing::class, name = "OtherThing"),
     ]
 )
-interface Thing {
-    val thing: String
-}
+open class Thing(open val thing: String)
 
-@Schema(description = "Some thing", allOf = [Thing::class, SomeThing::class])
-data class SomeThing(val some: String = "some",
-                     @field:Schema(hidden = true)
-                     override val thing: String = "thing") : Thing
+@Schema(description = "Some thing")
+data class SomeThing(
+    val some: String = "some",
+    @field:Schema(hidden = true)
+    override val thing: String = "thing"
+) : Thing(thing)
 
-@Schema(description = "Other thing", allOf = [Thing::class, OtherThing::class])
-data class OtherThing(val other: String = "other",
-                     @field:Schema(hidden = true)
-                     override val thing: String = "thing") : Thing
+@Schema(description = "Other thing")
+data class OtherThing(
+    val other: String = "other",
+    @field:Schema(hidden = true)
+    override val thing: String = "thing"
+) : Thing(thing)
